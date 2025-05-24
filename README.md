@@ -3,10 +3,6 @@
  
 
 ## AIM:
- .
-
- 
-
 To write a C program to implement the Playfair Substitution technique.
 
 ## DESCRIPTION:
@@ -20,9 +16,6 @@ To encrypt a message, one would break the message into digrams (groups of 2 lett
 4.	If the letters are not on the same row or column, replace them with the letters on the same row respectively but at the other pair of corners of the rectangle defined by the original pair.
 ## EXAMPLE:
 ![image](https://github.com/Hemamanigandan/EX-NO-2-/assets/149653568/e6858d4f-b122-42ba-acdb-db18ec2e9675)
-
- 
-
 ## ALGORITHM:
 
 STEP-1: Read the plain text from the user.
@@ -34,10 +27,87 @@ STEP-5: Display the obtained cipher text.
 
 
 
-Program:
+## Program:
+~~~
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define SIZE 5
+
+char keyTable[SIZE][SIZE];
+
+void generateKeyTable(char key[]) {
+    int dict[26] = {0}, k = 0;
+    for (int i = 0; key[i]; i++) {
+        if (key[i] == 'J') key[i] = 'I';
+        if (!dict[key[i] - 'A']) {
+            dict[key[i] - 'A'] = 1;
+            keyTable[k / SIZE][k % SIZE] = key[i];
+            k++;
+        }
+    }
+    for (int i = 0; i < 26; i++) {
+        if (i + 'A' != 'J' && !dict[i]) {
+            keyTable[k / SIZE][k % SIZE] = i + 'A';
+            k++;
+        }
+    }
+}
+
+void findPos(char c, int *r, int *c_) {
+    if (c == 'J') c = 'I';
+    for (int i = 0; i < SIZE; i++)
+        for (int j = 0; j < SIZE; j++)
+            if (keyTable[i][j] == c) {
+                *r = i; *c_ = j;
+                return;
+            }
+}
+void encryptPair(char a, char b, char *x, char *y) {
+    int r1, c1, r2, c2;
+    findPos(a, &r1, &c1);
+    findPos(b, &r2, &c2);
+    if (r1 == r2) {
+        *x = keyTable[r1][(c1 + 1) % SIZE];
+        *y = keyTable[r2][(c2 + 1) % SIZE];
+    } else if (c1 == c2) {
+        *x = keyTable[(r1 + 1) % SIZE][c1];
+        *y = keyTable[(r2 + 1) % SIZE][c2];
+    } else {
+        *x = keyTable[r1][c2];
+        *y = keyTable[r2][c1];
+    }
+}
+
+void encrypt(char text[], char cipher[]) {
+    for (int i = 0; text[i]; i += 2) {
+        encryptPair(text[i], text[i + 1], &cipher[i], &cipher[i + 1]);
+    }
+    cipher[strlen(text)] = '\0';
+}
+
+int main() {
+    char key[100], text[100], cipher[100];
+    printf("Enter key: ");
+    scanf("%s", key);
+    printf("Enter plain text: ");
+    scanf("%s", text);
+    
+    generateKeyTable(key);
+    encrypt(text, cipher);
+    printf("Cipher Text: %s\n", cipher);
+    return 0;
+}
+
+
+~~~
 
 
 
 
+## Output:
+![image](https://github.com/user-attachments/assets/1bdec6f2-ac6d-4ba4-8306-e9afc164b083)
+## Result:
+The program is executed successfully
 
-Output:
